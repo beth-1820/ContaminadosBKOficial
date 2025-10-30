@@ -1,7 +1,4 @@
 const express = require('express');
-const fs = require('fs');
-const https = require('https');
-const path = require('path');
 const next = require('next');
 
 // Define si estás en modo desarrollo
@@ -12,35 +9,23 @@ const handle = appNext.getRequestHandler();
 // Inicializar la aplicación Express
 const app = express();
 
-// Leer los certificados para HTTPS
-const httpsOptions = {
-  key: fs.readFileSync(path.join(__dirname, 'certs', 'localhost-key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'certs', 'localhost.pem')),
-};
-
 // Preparar Next.js
 appNext.prepare().then(() => {
-  // Redirigir todo el tráfico a Next.js (esto incluye todas las rutas)
+  // Redirigir todo el tráfico a Next.js
   app.all('*', (req, res) => {
     return handle(req, res);
   });
 
-  // Levantar servidor HTTPS en el puerto 3443
-  https.createServer(httpsOptions, app).listen(3443, (err) => {
+  // Usar el puerto de la variable de entorno o 3000 por defecto
+  const port = process.env.PORT || 3000;
+  
+  app.listen(port, (err) => {
     if (err) {
-      console.error('Error al iniciar el servidor HTTPS:', err);
+      console.error('Error al iniciar el servidor:', err);
       return;
     }
-    console.log('Servidor HTTPS corriendo en https://localhost:3443');
-  });
-
-  // Levantar servidor HTTP en el puerto 3002
-  app.listen(3002, (err) => {
-    if (err) {
-      console.error('Error al iniciar el servidor HTTP:', err);
-      return;
-    }
-    console.log('Servidor HTTP corriendo en http://localhost:3002');
+    console.log(`Servidor corriendo en puerto ${port}`);
+    console.log(`Modo: ${process.env.NODE_ENV || 'development'}`);
   });
 }).catch(err => {
   console.error('Error durante la preparación de Next.js:', err);

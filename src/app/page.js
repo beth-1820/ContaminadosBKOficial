@@ -115,10 +115,10 @@ export default function Home() {
             className="btn btn-outline-light"
             onClick={() => setShowSettings(true)}
           >
-            <FaCog /> Settings
+            <FaCog /> Server
           </button>
         </div>
-        <p className="game-subtitle">A strategy and social deduction game</p>
+        <p className="game-subtitle"></p>
       </div>
     </header>
 
@@ -371,7 +371,7 @@ export default function Home() {
     <footer className="game-footer" style={{ margin: '0 10px 10px 10px' }}>
       <div className="container text-center">
         <p>The planet's future is in your hands. Make the right choice!</p>
-        <small>contaminaDOS - A strategy and social deduction game</small>
+        <small>contaminaDOS </small>
       </div>
     </footer>
   </div>

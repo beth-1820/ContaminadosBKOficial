@@ -449,65 +449,103 @@ const GameInitiate = ({
         : [...prevGroup, player]
     );
   };
+  const updateVotesOnly = async () => {
+  try {
+    const currentRound = rounds.find((round) => round.status !== "ended");
+    if (currentRound) {
+      const headers = {
+        accept: "application/json",
+        player: playerName,
+        ...(gamePassword && { password: gamePassword }),
+      };
+
+      const response = await fetch(
+        `${backEndAddress}/api/games/${selectedGame.id}/rounds/${currentRound.id}`,
+        {
+          method: "GET",
+          headers: headers,
+        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("🗳️ Votos actualizados:", data.data.votes);
+        setVotesActual(data.data.votes); // ← Solo actualiza los votos
+      }
+    }
+  } catch (err) {
+    console.error("Error actualizando votos:", err);
+  }
+};
+useEffect(() => {
+  const intervalId = setInterval(() => {
+    if (selectedGame && selectedGame.status === "rounds") {
+      console.log("🔄 Actualizando votos automáticamente...");
+      updateVotesOnly();
+    }
+  }, 3000); // Cada 3 segundos
+
+  return () => clearInterval(intervalId);
+}, [selectedGame, rounds, playerName, gamePassword]); // Dependencias importantes
 
   const isLeader = leaderActual === playerName;
   const isEnemy =
     selectedGame.enemies && selectedGame.enemies.includes(playerName);
 
- return (
+return (
   <div className="game-list-container contaminaDOS-theme" style={{ margin: '20px' }}>
     <div className="games-container">
-      {/* Header mejorado */}
+      {/* Improved Header */}
       <div className="list-header">
-        <div></div> {/* Espaciador para centrar el título */}
+        <div></div> {/* Spacer to center title */}
         <h2 className="list-title text-center">
           <FaPlayCircle className="me-3 text-success" size={40} />
-          ¡El Juego Ha Comenzado!
+          The Game Has Started!
         </h2>
-        <div></div> {/* Espaciador para balancear */}
+        <div></div> {/* Spacer to balance */}
       </div>
 
-      <p className="welcome-text text-center mb-5">Buena suerte a todos los jugadores en esta batalla por el planeta</p>
+      <p className="welcome-text text-center mb-5">Good luck to all players in this battle for the planet</p>
 
       <div className="row">
-        {/* Columna izquierda - Información principal */}
+        {/* Left column - Main information */}
         <div className="col-lg-8">
-          {/* Marcador mejorado */}
+          {/* Improved Scoreboard */}
           <div className="eco-card mb-4">
             <div className="card-body">
               <h3 className="card-title text-center mb-4">
                 <FaTrophy className="me-2 text-warning" />
-                Marcador de la Partida
+                Match Scoreboard
               </h3>
               <div className="row text-center">
                 <div className="col-6">
                   <div className="score-card score-citizen">
                     <FaLeaf className="score-icon mb-3" size={40} />
                     <h2 className="score-value">{citizensScore}</h2>
-                    <p className="score-label">Ciudadanos Ejemplares</p>
-                    <small className="score-description">Defensores del planeta</small>
+                    <p className="score-label">Exemplary Citizens</p>
+                    <small className="score-description">Planet defenders</small>
                   </div>
                 </div>
                 <div className="col-6">
                   <div className="score-card score-enemy">
                     <FaSkull className="score-icon mb-3" size={40} />
                     <h2 className="score-value">{enemiesScore}</h2>
-                    <p className="score-label">Psicópatas Ambientales</p>
-                    <small className="score-description">Amenaza ecológica</small>
+                    <p className="score-label">Environmental Psychopaths</p>
+                    <small className="score-description">Ecological threat</small>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Información de la ronda - Mejorada */}
+          {/* Round Information - Improved */}
           {view === "gameStarted" && selectedGame && (
             <div className="eco-card mb-4">
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h3 className="card-title mb-0">
                     <FaSyncAlt className="me-2 text-primary" />
-                    Ronda Actual
+                    Current Round
                   </h3>
                   <span className="badge bg-primary fs-6">ID: {idRondaActual}</span>
                 </div>
@@ -516,34 +554,34 @@ const GameInitiate = ({
                   <div className="col-md-6">
                     <div className="info-item">
                       <FaCrown className="me-2 text-warning" />
-                      <strong>Líder:</strong> 
+                      <strong>Leader:</strong> 
                       <span className="text-success ms-2">{leaderActual}</span>
                     </div>
                     <div className="info-item">
                       <FaChartBar className="me-2 text-info" />
-                      <strong>Resultado:</strong> 
+                      <strong>Result:</strong> 
                       <span className="badge bg-info ms-2">{resultActual}</span>
                     </div>
                     <div className="info-item">
                       <FaCircle className="me-2 text-warning" />
-                      <strong>Estado:</strong> 
+                      <strong>Status:</strong> 
                       <span className="badge bg-warning ms-2">{statusActual}</span>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="info-item">
                       <FaClock className="me-2 text-secondary" />
-                      <strong>Fase:</strong> 
+                      <strong>Phase:</strong> 
                       <span className="badge bg-secondary ms-2">{phaseActual}</span>
                     </div>
                   </div>
                 </div>
                 
-                {/* Grupo actual */}
+                {/* Current Group */}
                 <div className="info-section mt-4">
                   <h5 className="section-title">
                     <FaUsers className="me-2" />
-                    Grupo Actual
+                    Current Group
                   </h5>
                   <div className="group-members">
                     {groupActual && groupActual.length > 0 ? (
@@ -556,29 +594,44 @@ const GameInitiate = ({
                     ) : (
                       <div className="empty-group">
                         <FaUsers className="me-2" />
-                        Sin grupo asignado
+                        No group assigned
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Votos actuales */}
+                {/* Current Votes - WITH COUNT ADDED */}
                 <div className="info-section mt-3">
                   <h5 className="section-title">
                     <FaVoteYea className="me-2" />
-                    Votos Registrados
+                    Registered Votes
                   </h5>
                   <div className="votes-list">
                     {votesActual && votesActual.length > 0 ? (
-                      votesActual.map((vote, idx) => (
-                        <span key={idx} className="vote-badge">
-                          {vote}
-                        </span>
-                      ))
+                      <div>
+                        <code style={{ 
+                          background: '#f8f9fa', 
+                          padding: '10px', 
+                          borderRadius: '5px', 
+                          display: 'block',
+                          fontFamily: 'monospace'
+                        }}>
+                          {JSON.stringify(votesActual)}
+                        </code>
+                        
+                        {/* VOTE COUNT ADDED */}
+                        <div className="mt-2 text-center">
+                          <small className="text-muted">
+                            <strong>✅ In favor:</strong> {votesActual.filter(vote => vote === true).length} | 
+                            <strong> ❌ Against:</strong> {votesActual.filter(vote => vote === false).length}
+                          </small>
+                        </div>
+                        
+                      </div>
                     ) : (
                       <div className="empty-votes">
                         <FaVoteYea className="me-2" />
-                        Sin votos registrados
+                        No votes registered
                       </div>
                     )}
                   </div>
@@ -587,7 +640,7 @@ const GameInitiate = ({
             </div>
           )}
 
-          {/* Lista de enemigos - Mejorada */}
+          {/* Enemies List - Improved */}
           {selectedGame.enemies &&
             selectedGame.enemies.length > 0 &&
             selectedGame.enemies.includes(playerName) && (
@@ -595,17 +648,17 @@ const GameInitiate = ({
                 <div className="card-body">
                   <h4 className="card-title">
                     <FaSkullCrossbones className="me-2" />
-                    Compañeros Enemigos
+                    Enemy Companions
                     <span className="badge bg-danger ms-2">{selectedGame.enemies.length}</span>
                   </h4>
-                  <p className="text-muted mb-3">Solo visible para los psicópatas ambientales</p>
+                  <p className="text-muted mb-3">Only visible to environmental psychopaths</p>
                   <div className="enemies-grid">
                     {selectedGame.enemies.map((enemy, index) => (
                       <div key={index} className="enemy-card">
                         <FaUserSecret className="enemy-icon" />
                         <span className="enemy-name">{enemy}</span>
                         {enemy === playerName && (
-                          <FaUser className="text-warning ms-2" title="Tú" />
+                          <FaUser className="text-warning ms-2" title="You" />
                         )}
                       </div>
                     ))}
@@ -615,14 +668,14 @@ const GameInitiate = ({
             )}
         </div>
 
-        {/* Columna derecha - Acciones y jugadores */}
+        {/* Right column - Actions and players */}
         <div className="col-lg-4">
-          {/* Lista de jugadores - Mejorada */}
+          {/* Players List - Improved */}
           <div className="eco-card mb-4">
             <div className="card-body">
               <h3 className="card-title">
                 <FaUsers className="me-2" />
-                Jugadores
+                Players
                 <span className="badge bg-primary ms-2">{selectedGame.players?.length || 0}</span>
               </h3>
               <div className="players-grid">
@@ -634,10 +687,10 @@ const GameInitiate = ({
                     <div key={index} className={`player-card ${isEnemyPlayer ? 'enemy' : 'citizen'} ${isCurrentPlayer ? 'current-player' : ''}`}>
                       <span className="player-name">
                         {player}
-                        {isCurrentPlayer && <small className="text-muted ms-1">(tú)</small>}
+                        {isCurrentPlayer && <small className="text-muted ms-1">(you)</small>}
                       </span>
-                      {isEnemyPlayer && <FaSkull className="enemy-indicator" title="Psicópata ambiental" />}
-                      {player === leaderActual && <FaCrown className="text-warning ms-2" title="Líder actual" />}
+                      {isEnemyPlayer && <FaSkull className="enemy-indicator" title="Environmental Psychopath" />}
+                      {player === leaderActual && <FaCrown className="text-warning ms-2" title="Current Leader" />}
                     </div>
                   );
                 })}
@@ -645,9 +698,57 @@ const GameInitiate = ({
             </div>
           </div>
 
-          {/* Panel de acciones */}
+          {/* Current Player Information */}
+          <div className="eco-card mb-4">
+            <div className="card-body">
+              <h3 className="card-title">
+                <FaUser className="me-2 text-info" />
+                Your Information
+              </h3>
+              <div className="player-info-card">
+                <div className="info-row">
+                  <strong>Player:</strong>
+                  <span className="player-name-badge">{playerName}</span>
+                </div>
+                <div className="info-row">
+                  <strong>Role:</strong>
+                  <span className={`role-badge ${selectedGame.enemies?.includes(playerName) ? 'enemy-role' : 'citizen-role'}`}>
+                    {selectedGame.enemies?.includes(playerName) ? (
+                      <>
+                        <FaSkull className="me-1" />
+                        Environmental Psychopath
+                      </>
+                    ) : (
+                      <>
+                        <FaLeaf className="me-1" />
+                        Exemplary Citizen
+                      </>
+                    )}
+                  </span>
+                </div>
+                <div className="info-row">
+                  <strong>Status:</strong>
+                  <span className={`status-badge ${isLeader ? 'leader-status' : 'player-status'}`}>
+                    {isLeader ? (
+                      <>
+                        <FaCrown className="me-1" />
+                        Current Leader
+                      </>
+                    ) : (
+                      <>
+                        <FaUser className="me-1" />
+                        Player
+                      </>
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions Panel */}
           <div className="action-panel">
-            {/* Acción de actualizar */}
+            {/* Update Action */}
             <div className="eco-card mb-3">
               <div className="card-body">
                 <button
@@ -655,12 +756,12 @@ const GameInitiate = ({
                   className="btn btn-primary w-100"
                   onClick={handleUpdateInfo}
                 >
-                  <FaSyncAlt className="me-2" /> Actualizar Información
+                  <FaSyncAlt className="me-2" /> Update Information
                 </button>
               </div>
             </div>
 
-            {/* Acción del líder */}
+            {/* Leader Action */}
             {isLeader && (
               <div className="eco-card mb-3">
                 <div className="card-body">
@@ -670,18 +771,18 @@ const GameInitiate = ({
                     data-bs-target="#leaderModal"
                     onClick={submitGroupProposal}
                   >
-                    <FaUsers className="me-2" /> Proponer Grupo
+                    <FaUsers className="me-2" /> Propose Group
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Votación */}
+            {/* Voting */}
             <div className="eco-card mb-3">
               <div className="card-body">
                 <h5 className="card-title">
                   <FaVoteYea className="me-2" />
-                  Votación Actual
+                  Current Voting
                 </h5>
                 {votesState[playerName] === null ? (
                   <div className="voting-buttons">
@@ -689,48 +790,48 @@ const GameInitiate = ({
                       className="btn btn-success w-100 mb-2"
                       onClick={() => submitVote(true)}
                     >
-                      <FaCheck className="me-2" /> De Acuerdo
+                      <FaCheck className="me-2" /> In Favor
                     </button>
                     <button
                       className="btn btn-danger w-100"
                       onClick={() => submitVote(false)}
                     >
-                      <FaTimes className="me-2" /> En Desacuerdo
+                      <FaTimes className="me-2" /> Against
                     </button>
                   </div>
                 ) : (
                   <div className="voted-info text-center">
                     <FaCheckCircle className="text-success mb-2" size={30} />
-                    <p className="mb-1"><strong>Voto registrado</strong></p>
+                    <p className="mb-1"><strong>Vote registered</strong></p>
                     <span className={`badge ${votesState[playerName] ? 'bg-success' : 'bg-danger'}`}>
-                      {votesState[playerName] ? "De Acuerdo" : "En Desacuerdo"}
+                      {votesState[playerName] ? "In Favor" : "Against"}
                     </span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Acción en grupo */}
+            {/* Group Action */}
             {groupActual.includes(playerName) && (
               <div className="psy-card">
                 <div className="card-body">
                   <h5 className="card-title">
                     <FaHandshake className="me-2" />
-                    Tu Acción en el Grupo
+                    Your Action in the Group
                   </h5>
                   <div className="action-buttons">
                     <button
                       className="btn btn-success w-100 mb-2"
                       onClick={() => submitAction(true)}
                     >
-                      <FaHandshake className="me-2" /> Colaborar
+                      <FaHandshake className="me-2" /> Collaborate
                     </button>
                     {isEnemy && (
                       <button
                         className="btn btn-danger w-100"
                         onClick={() => submitAction(false)}
                       >
-                        <FaSkullCrossbones className="me-2" /> Sabotear
+                        <FaSkullCrossbones className="me-2" /> Sabotage
                       </button>
                     )}
                   </div>
@@ -742,7 +843,7 @@ const GameInitiate = ({
       </div>
     </div>
 
-    {/* Modal para seleccionar grupo */}
+    {/* Modal to select group */}
     <div
       className="modal fade"
       id="leaderModal"
@@ -755,7 +856,7 @@ const GameInitiate = ({
           <div className="modal-header">
             <h5 className="modal-title" id="leaderModalLabel">
               <FaUsers className="me-2" />
-              Seleccionar Grupo para la Misión
+              Select Group for the Mission
             </h5>
             <button
               type="button"
@@ -765,7 +866,7 @@ const GameInitiate = ({
             ></button>
           </div>
           <div className="modal-body">
-            <p className="text-muted mb-3">Selecciona los jugadores para la próxima misión:</p>
+            <p className="text-muted mb-3">Select players for the next mission:</p>
             <form id="groupForm" className="group-form">
               {selectedGame.players?.map((player, index) => {
                 return (
@@ -783,7 +884,7 @@ const GameInitiate = ({
                       htmlFor={`player${index}`}
                     >
                       {player}
-                      {player === playerName && <span className="text-muted ms-1">(tú)</span>}
+                      {player === playerName && <span className="text-muted ms-1">(you)</span>}
                     </label>
                   </div>
                 );
@@ -796,7 +897,7 @@ const GameInitiate = ({
               className="btn btn-secondary"
               data-bs-dismiss="modal"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               type="button"
@@ -804,7 +905,7 @@ const GameInitiate = ({
               onClick={submitGroupProposal}
             >
               <FaPaperPlane className="me-2" />
-              Enviar Propuesta
+              Send Proposal
             </button>
           </div>
         </div>
@@ -820,5 +921,4 @@ const GameInitiate = ({
   </div>
 );
 }
-
 export default GameInitiate;

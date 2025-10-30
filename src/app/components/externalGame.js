@@ -66,67 +66,98 @@ const ExternalGame = ({
   const totalPages = Math.ceil(filteredGames.length / limitPerPage);
 
   return (
-    <div className="game-list-container">
-      <button className="back-button" onClick={onBack}>Back</button>
+  <div className="game-list-container contaminaDOS-theme" style={{ margin: '20px' }}>
+    <div className="games-container" style={{ marginLeft: '20px', marginRight: '20px' }}>
+      <div className="list-header" style={{ marginLeft: '20px', marginRight: '20px' }}>
+        <button className="back-button" onClick={onBack}>
+          ← Back
+        </button>
+        <h2 className="list-title">Game List</h2>
+        <div></div> {/* Spacer for alignment */}
+      </div>
 
-      <input
-        type="text"
-        className="search-input"
-        placeholder="Search game..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+      <div className="search-box">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search game..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
 
       {loading ? (
-        <p>Loading games...</p>
+        <div className="empty-state">
+          <div className="icon">⏳</div>
+          <p>Loading games...</p>
+        </div>
       ) : (
         <div>
-          <table className="game-table">
-            <thead>
-              <tr>
-                <th>Game Name</th>
-                <th>Owner</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedGames.map((game) => (
-                <tr key={game.id}>
-                  <td>{game.name}</td>
-                  <td>{game.owner}</td>
-                  <td>
-                    <button className="select-button" onClick={() => onSelectGame(game)}>
-                      Select
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {paginatedGames.length === 0 ? (
+            <div className="empty-state">
+              <div className="icon">🎮</div>
+              <p>No games found</p>
+            </div>
+          ) : (
+            <>
+              <div className="games-table">
+                <table className="game-table">
+                  <thead>
+                    <tr className="table-header">
+                      <th>Game Name</th>
+                      <th>Owner</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedGames.map((game) => (
+                      <tr key={game.id}>
+                        <td className="game-name">{game.name}</td>
+                        <td className="game-owner">{game.owner}</td>
+                        <td>
+                          <button
+                            className="select-button"
+                            onClick={() => onSelectGame(game)}
+                          >
+                            Select
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          <div className="pagination-controls">
-            <button
-              className="pagination-button"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
+              <div className="pagination-container">
+                <div className="pagination-controls">
+                  <button
+                    className="pagination-button"
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
 
-            <span>Page {currentPage} of {totalPages}</span>
+                  <span className="page-info">
+                    Page {currentPage} of {totalPages}
+                  </span>
 
-            <button
-              className="pagination-button"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+                  <button
+                    className="pagination-button"
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
-  );
-};
+  </div>
+);
+}
 
 export default ExternalGame;

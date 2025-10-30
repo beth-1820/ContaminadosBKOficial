@@ -98,67 +98,67 @@ const InternalGame = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="container-game">
-      <h2>Create Game</h2>
-      <div className="mb-3">
-        <label className="form-label">Game Name</label>
-        <input
-          type="text"
-          className="form-control"
-          value={gameDetails.name}
-          onChange={(e) =>
-            setGameDetails({ ...gameDetails, name: e.target.value })
-          }
-          required
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Owner</label>
-        <input
-          type="text"
-          className="form-control"
-          value={gameDetails.owner}
-          onChange={(e) =>
-            setGameDetails({ ...gameDetails, owner: e.target.value })
-          }
-          required
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Password</label>
-        <input
-          type="password"
-          className="form-control"
-          value={gameDetails.password}
-          onChange={(e) =>
-            setGameDetails({ ...gameDetails, password: e.target.value })
-          }
-        />
-      </div>
-      <button type="submit" className="btn btn-primary">
-        Create
-      </button>
-      <button
-        type="button"
-        className="btn btn-secondary ms-2"
-        onClick={onCancel}
-      >
-        Cancel
-      </button>
+  <form onSubmit={handleSubmit} className="container-game" style={{ margin: '20px' }}>
+    <h2>Create Game</h2>
+    <div className="mb-3">
+      <label className="form-label">Game Name</label>
+      <input
+        type="text"
+        className="form-control"
+        value={gameDetails.name}
+        onChange={(e) =>
+          setGameDetails({ ...gameDetails, name: e.target.value })
+        }
+        required
+      />
+    </div>
+    <div className="mb-3">
+      <label className="form-label">Owner</label>
+      <input
+        type="text"
+        className="form-control"
+        value={gameDetails.owner}
+        onChange={(e) =>
+          setGameDetails({ ...gameDetails, owner: e.target.value })
+        }
+        required
+      />
+    </div>
+    <div className="mb-3">
+      <label className="form-label">Password</label>
+      <input
+        type="password"
+        className="form-control"
+        value={gameDetails.password}
+        onChange={(e) =>
+          setGameDetails({ ...gameDetails, password: e.target.value })
+        }
+      />
+    </div>
+    <button type="submit" className="btn btn-primary">
+      Create
+    </button>
+    <button
+      type="button"
+      className="btn btn-secondary ms-2"
+      onClick={onCancel}
+    >
+      Cancel
+    </button>
 
-      <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Error</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{errorMessage}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowErrorModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </form>
-  );
-};
+    <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>Error</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>{errorMessage}</Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowErrorModal(false)}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  </form>
+);
+}
 
 export default InternalGame;

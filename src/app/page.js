@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaCog } from "react-icons/fa";
+import { FaCog, FaLeaf, FaSkull, FaUsers, FaGlobeAmericas, FaRecycle } from "react-icons/fa";
 import InternalGame from "./components/internalGame";
 import ExternalGame from "./components/externalGame";
 import ConexionGame, { joinGame } from "./components/conexionGame";
@@ -99,197 +99,281 @@ export default function Home() {
   };
   
   return (
-    <div className="container-game">
-      {view === "home" && (
-        <>
+  <div className="container-game contaminaDOS-theme">
+    {/* Header con tema ambiental */}
+    <header className="game-header" style={{ margin: '10px 10px 0 10px' }}>
+      <div className="container">
+        <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+            <FaLeaf className="header-icon eco-icon" />
+            <h1 className="game-title">
+              contamina<span className="dos-text">DOS</span>
+            </h1>
+          </div>
           <button
             type="button"
-            className="btn btn-secondary float-end"
+            className="btn btn-outline-light"
             onClick={() => setShowSettings(true)}
           >
             <FaCog /> Settings
           </button>
-          <h1 className="mb-4">Welcome</h1>
-          <div className="d-flex justify-content-around">
-            <button
-              className="btn btn-primary btn-lg"
-              onClick={() => {
-                if (!validateBackendAddress()) return;
-                setView("create");
-              }}
-            >
-              Create Game
-            </button>
-            <button
-              className="btn btn-success btn-lg"
-              onClick={() => {
-                if (!validateBackendAddress()) return;
-                setView("list");
-              }}
-            >
-              Join Game
-            </button>
+        </div>
+        <p className="game-subtitle">A strategy and social deduction game</p>
+      </div>
+    </header>
+
+    {view === "home" && (
+      <div className="main-menu">
+        <div className="container">
+          <div className="welcome-section text-center mb-5">
+            <FaGlobeAmericas className="globe-icon" />
+            <h2 className="welcome-title">Save the Planet</h2>
+            <p className="welcome-text">
+              In a world on the verge of environmental collapse, your decision makes the difference.<br />
+              Are you an exemplary citizen or an environmental psychopath?
+            </p>
           </div>
-        </>
-      )}
-      {view === "create" && (
-        <InternalGame
-          onGameCreated={handleGameCreated}
-          onCancel={() => setView("home")}
-          setErrorMessage={setErrorMessage}
-          backendAddress={backendAddress}
-        />
-      )}
-      {view === "list" && (
-        <ExternalGame
-          onSelectGame={handleSelectGame}
-          onBack={() => setView("home")}
-          backEndAddress={backendAddress}
-        />
-      )}
-      <div
-        className={`modal fade ${showSettings ? "show" : ""}`}
-        style={{ display: showSettings ? "block" : "none" }}
-        tabIndex={-1}
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title text-dark">Settings</h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={() => setShowSettings(false)}
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label className="text-dark">Backend Address</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={backendAddress}
-                  onChange={(e) => setBackendAddress(e.target.value)}
-                />
+
+          <div className="action-buttons">
+            <div className="row justify-content-center">
+              <div className="col-md-5 mb-3">
+                <div className="card eco-card">
+                  <div className="card-body text-center">
+                    <FaLeaf className="action-icon" />
+                    <h3 className="card-title">Create Game</h3>
+                    <p className="card-text">Start a new fight for the planet</p>
+                    <button
+                      className="btn btn-success btn-lg w-100"
+                      onClick={() => {
+                        if (!validateBackendAddress()) return;
+                        setView("create");
+                      }}
+                    >
+                      Create Game
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-5 mb-3">
+                <div className="card psy-card">
+                  <div className="card-body text-center">
+                    <FaUsers className="action-icon" />
+                    <h3 className="card-title">Join Game</h3>
+                    <p className="card-text">Join an existing community</p>
+                    <button
+                      className="btn btn-warning btn-lg w-100"
+                      onClick={() => {
+                        if (!validateBackendAddress()) return;
+                        setView("list");
+                      }}
+                    >
+                      Join Game
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleSaveBackendAddress}
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setShowSettings(false)}
-              >
-                Close
-              </button>
+          </div>
+
+          <div className="game-info mt-5">
+            <div className="row">
+              <div className="col-md-4 mb-3">
+                <div className="info-card">
+                  <FaLeaf className="info-icon" />
+                  <h4>Exemplary Citizens</h4>
+                  <p>They fight to protect and improve the environment</p>
+                </div>
+              </div>
+              <div className="col-md-4 mb-3">
+                <div className="info-card">
+                  <FaSkull className="info-icon" />
+                  <h4>Psychopaths</h4>
+                  <p>They put their own interests above the planet</p>
+                </div>
+              </div>
+              <div className="col-md-4 mb-3">
+                <div className="info-card">
+                  <FaRecycle className="info-icon" />
+                  <h4>5 Decades</h4>
+                  <p>The planet's future is decided in 5 decades</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      {view === "joinGame" && (
-        <ConexionGame
-          selectedGame={selectedGame}
-          onJoinGame={handleJoinGame}
-          onCancel={() => setView("list")}
-          playerNameRef={playerNameRef}
-          backEndAddress={backendAddress}
-        />
-      )}
+    )}
 
-      {view === "gameDetails" && selectedGame && (
-        <GameFeatures
-          selectedGame={selectedGame}
-          playerName={playerName}
-          gamePassword={gamePassword}
-          isOwner={isOwner}
-          view={view}
-          setView={setView}
-          setSelectedGame={setSelectedGame}
-          backEndAddress={backendAddress}
-        />
-      )}
+    {view === "create" && (
+      <InternalGame
+        onGameCreated={handleGameCreated}
+        onCancel={() => setView("home")}
+        setErrorMessage={setErrorMessage}
+        backendAddress={backendAddress}
+      />
+    )}
 
-      {view === "gameStarted" && selectedGame && (
-        <GameInitiate
-          selectedGame={{ ...selectedGame, id: selectedGame.id || "" }}
-          playerName={playerName}
-          gamePassword={gamePassword}
-          view={view}
-          setView={setView}
-          backEndAddress={backendAddress}
-        />
-      )}
-      <div
-        className={`modal fade ${showErrorModal ? "show" : ""}`}
-        style={{ display: showErrorModal ? "block" : "none" }}
-        tabIndex={-1}
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="errorModalLabel">
-                Error
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                onClick={handleCloseErrorModal}
-              ></button>
-            </div>
-            <div className="modal-body">{errorMessage}</div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-                onClick={handleCloseErrorModal}
-              >
-                Close
-              </button>
+    {view === "list" && (
+      <ExternalGame
+        onSelectGame={handleSelectGame}
+        onBack={() => setView("home")}
+        backEndAddress={backendAddress}
+      />
+    )}
+
+    {/* Settings Modal */}
+    <div
+      className={`modal fade ${showSettings ? "show" : ""}`}
+      style={{ display: showSettings ? "block" : "none" }}
+      tabIndex={-1}
+    >
+      <div className="modal-dialog">
+        <div className="modal-content eco-modal">
+          <div className="modal-header">
+            <h5 className="modal-title">System Settings</h5>
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() => setShowSettings(false)}
+            ></button>
+          </div>
+          <div className="modal-body">
+            <div className="form-group">
+              <label>Backend Address</label>
+              <input
+                type="text"
+                className="form-control"
+                value={backendAddress}
+                onChange={(e) => setBackendAddress(e.target.value)}
+              />
+              <small className="form-text">
+                Configure your backend server address
+              </small>
             </div>
           </div>
-        </div>
-      </div>
-      <div
-        className={`modal fade ${showBackendErrorModal ? "show" : ""}`}
-        style={{ display: showBackendErrorModal ? "block" : "none" }}
-        tabIndex={-1}
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title text-dark" id="backendErrorModalLabel">
-                Backend Address Required
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={handleCloseBackendErrorModal}
-              ></button>
-            </div>
-            <div className="modal-body text-dark">
-              You must configure a backend address before continuing.
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleCloseBackendErrorModal}
-              >
-                Close
-              </button>
-            </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={handleSaveBackendAddress}
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setShowSettings(false)}
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
     </div>
-  );
+
+    {view === "joinGame" && (
+      <ConexionGame
+        selectedGame={selectedGame}
+        onJoinGame={handleJoinGame}
+        onCancel={() => setView("list")}
+        playerNameRef={playerNameRef}
+        backEndAddress={backendAddress}
+      />
+    )}
+
+    {view === "gameDetails" && selectedGame && (
+      <GameFeatures
+        selectedGame={selectedGame}
+        playerName={playerName}
+        gamePassword={gamePassword}
+        isOwner={isOwner}
+        view={view}
+        setView={setView}
+        setSelectedGame={setSelectedGame}
+        backEndAddress={backendAddress}
+      />
+    )}
+
+    {view === "gameStarted" && selectedGame && (
+      <GameInitiate
+        selectedGame={{ ...selectedGame, id: selectedGame.id || "" }}
+        playerName={playerName}
+        gamePassword={gamePassword}
+        view={view}
+        setView={setView}
+        backEndAddress={backendAddress}
+      />
+    )}
+
+    {/* Error Modal */}
+    <div
+      className={`modal fade ${showErrorModal ? "show" : ""}`}
+      style={{ display: showErrorModal ? "block" : "none" }}
+      tabIndex={-1}
+    >
+      <div className="modal-dialog">
+        <div className="modal-content psy-modal">
+          <div className="modal-header">
+            <h5 className="modal-title">System Error</h5>
+            <button
+              type="button"
+              className="btn-close"
+              onClick={handleCloseErrorModal}
+            ></button>
+          </div>
+          <div className="modal-body">{errorMessage}</div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={handleCloseErrorModal}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Backend Error Modal */}
+    <div
+      className={`modal fade ${showBackendErrorModal ? "show" : ""}`}
+      style={{ display: showBackendErrorModal ? "block" : "none" }}
+      tabIndex={-1}
+    >
+      <div className="modal-dialog">
+        <div className="modal-content eco-modal">
+          <div className="modal-header">
+            <h5 className="modal-title">Backend Address Required</h5>
+            <button
+              type="button"
+              className="btn-close"
+              onClick={handleCloseBackendErrorModal}
+            ></button>
+          </div>
+          <div className="modal-body">
+            You must configure a backend address before continuing.
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={handleCloseBackendErrorModal}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Footer */}
+    <footer className="game-footer" style={{ margin: '0 10px 10px 10px' }}>
+      <div className="container text-center">
+        <p>The planet's future is in your hands. Make the right choice!</p>
+        <small>contaminaDOS - A strategy and social deduction game</small>
+      </div>
+    </footer>
+  </div>
+);
 }

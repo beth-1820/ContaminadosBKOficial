@@ -545,7 +545,7 @@ return (
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h3 className="card-title mb-0">
                     <FaSyncAlt className="me-2 text-primary" />
-                    Current Round
+                    Current Round = {currentRoundIndex + 1}
                   </h3>
                   <span className="badge bg-primary fs-6">ID: {idRondaActual}</span>
                 </div>

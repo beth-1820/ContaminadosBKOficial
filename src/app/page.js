@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaCog, FaLeaf, FaSkull, FaUsers, FaGlobeAmericas, FaRecycle } from "react-icons/fa";
 import InternalGame from "./components/internalGame";
 import ExternalGame from "./components/externalGame";
 import ConexionGame, { joinGame } from "./components/conexionGame";
 import GameFeatures from "./components/gameFeatures";
 import GameInitiate from "./components/gameInitiate";
 import ControlErrors from "./components/controlErrors";
+import { FaCog, FaLeaf, FaSkull, FaUsers, FaGlobeAmericas, FaRecycle, FaBook } from "react-icons/fa";
 
 export default function Home() {
   useEffect(() => {
@@ -29,6 +29,7 @@ export default function Home() {
   const playerNameRef = useRef(null);
   const [citizensScore, setCitizensScore] = useState(0);
   const [enemiesScore, setEnemiesScore] = useState(0);
+  const [showRules, setShowRules] = useState(false);
 
   const handleGameCreated = (game, password) => {
     if (!validateBackendAddress()) return;
@@ -110,13 +111,25 @@ export default function Home() {
               contamina<span className="dos-text">DOS</span>
             </h1>
           </div>
-          <button
-            type="button"
-            className="btn btn-outline-light"
-            onClick={() => setShowSettings(true)}
-          >
-            <FaCog /> Server
-          </button>
+          <div className="d-flex align-items-center gap-2">
+            <span className="text-light me-2" style={{ fontSize: '0.9rem' }}>
+              Don't forget to read the instructions before playing
+            </span>
+            <button
+              type="button"
+              className="btn btn-outline-light"
+              onClick={() => setShowRules(true)}
+            >
+              <FaBook className="me-1" /> Game Rules
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-light"
+              onClick={() => setShowSettings(true)}
+            >
+              <FaCog className="me-1" /> Server
+            </button>
+          </div>
         </div>
         <p className="game-subtitle"></p>
       </div>
@@ -220,6 +233,92 @@ export default function Home() {
         backEndAddress={backendAddress}
       />
     )}
+
+        {/* Modal de Reglas del Juego */}
+    <div
+      className={`modal fade ${showRules ? "show" : ""}`}
+      style={{ display: showRules ? "block" : "none" }}
+      tabIndex={-1}
+    >
+      <div className="modal-dialog modal-lg">
+        <div className="modal-content eco-modal">
+          <div className="modal-header">
+            <h5 className="modal-title">
+              <FaBook className="me-2" />
+              Reglas del Juego - contaminaDOS
+            </h5>
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() => setShowRules(false)}
+            ></button>
+          </div>
+          <div className="modal-body">
+            <div className="rules-list">
+              <ol className="list-group list-group-numbered">
+                <li className="list-group-item">
+                  <strong>Fundamental Step:</strong> Before starting the game, you must configure the server address using the server button (for this delivery the following is recommended: <strong>https://contaminados.akamai.meseguercr.com</strong>)
+                </li>
+                <li className="list-group-item">
+                  <strong>Objective:</strong> The team that first achieves <strong>3 victorious decades</strong> wins
+                </li>
+                <li className="list-group-item">
+                  <strong>Roles:</strong> You can be a <span className="text-success">Exemplary Citizen</span> (save the planet) or <span className="text-danger">Environmental Psychopath</span> (sabotage in secret)
+                </li>
+                <li className="list-group-item">
+                  <strong>Start:</strong> <strong>5-10 players</strong> are needed to start the game
+                </li>
+                <li className="list-group-item">
+                  <strong>Decades:</strong> The game lasts maximum <strong>5 rounds</strong>, each one is a decade
+                </li>
+                <li className="list-group-item">
+                  <strong>Leader:</strong> Each decade the system randomly selects a new leader
+                </li>
+                <li className="list-group-item">
+                  <strong>Groups:</strong> The leader proposes a group of specific size according to players and decade
+                </li>
+                <li className="list-group-item">
+                  <strong>Voting:</strong> Everyone votes <strong>for or against</strong> the proposed group
+                </li>
+                <li className="list-group-item">
+                  <strong>3 Attempts:</strong> If the proposal is rejected 3 times, <strong>the psychopaths win</strong> that decade
+                </li>
+                <li className="list-group-item">
+                  <strong>Actions:</strong> Group members choose to <strong>collaborate</strong> or <strong>sabotage</strong> (only psychopaths)
+                </li>
+                <li className="list-group-item">
+                  <strong>Citizen Victory:</strong> If everyone collaborates, <strong>the citizens win</strong> the decade
+                </li>
+                <li className="list-group-item">
+                  <strong>Psychopaths Victory:</strong> If there is at least one sabotage, <strong>the psychopaths win</strong>
+                </li>
+                <li className="list-group-item">
+                  <strong>Strategy:</strong> Psychopaths know each other, citizens <strong>DO NOT</strong>
+                </li>
+                <li className="list-group-item">
+                  <strong>Discussion:</strong> You can talk, deceive and deduce roles freely
+                </li>
+                <li className="list-group-item">
+                  <strong>Score:</strong> Follow the on-screen scoreboard - Citizens vs Psychopaths
+                </li>
+                <li className="list-group-item">
+                  <strong>End:</strong> When a team reaches <strong>3 points</strong>, the game ends immediately
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={() => setShowRules(false)}
+            >
+              Entendido, ¡a jugar!
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     {/* Settings Modal */}
     <div

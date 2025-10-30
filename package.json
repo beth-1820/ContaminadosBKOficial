@@ -7,7 +7,8 @@
     "dev:https": "node server.js",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "next clean"
   },
   "dependencies": {
     "axios": "^1.7.7",

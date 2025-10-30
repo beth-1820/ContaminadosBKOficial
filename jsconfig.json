@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.js", "**/*.jsx", ".next/types/**/*.ts", "tailwind.config.js", "src/app/page.js", "src/app/layout.js", "src/app/components/conexionGame.js", "src/app/components/gameInitiate.js", "src/app/components/externalGame.js", "src/app/components/gameFeatures.js", "src/app/components/controlErrors.js", "src/app/components/internalGame.js"],
+  "exclude": ["node_modules"]
+}

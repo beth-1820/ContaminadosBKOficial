@@ -54,13 +54,24 @@ const GameInitiate = ({
     }
   };
 
+  //Agregue aqui esto para que sirva el ganar
   useEffect(() => {
-    if (selectedGame.status === "ended") {
+    console.log("🔍 Verificando estado del juego:", {
+      status: selectedGame.status,
+      citizensScore,
+      enemiesScore,
+      showWinnerModal
+    });
+    
+    if (selectedGame.status === "ended" || citizensScore >= 3 || enemiesScore >= 3) {
       const winnerMessage = determineWinner();
+      console.log("🎉 Mostrando modal de ganador:", winnerMessage);
       setWinnerMessage(winnerMessage);
       setShowWinnerModal(true);
     }
   }, [selectedGame.status, citizensScore, enemiesScore]);
+//Hasta aqui 
+
 
   useEffect(() => {
     if (selectedGame.status === "rounds") {
@@ -917,8 +928,61 @@ return (
       handleClose={handleCloseModal}
       title={modalTitle}
       message={modalMessage}
+    
     />
-  </div>
+        {/* Winner Modal - NUEVO MODAL AGREGADO */}
+    <div
+      className={`modal fade ${showWinnerModal ? "show" : ""}`}
+      style={{ 
+        display: showWinnerModal ? "block" : "none", 
+        backgroundColor: 'rgba(0,0,0,0.5)' 
+      }}
+      tabIndex={-1}
+    >
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content eco-modal">
+          <div className="modal-header bg-success text-white">
+            <h5 className="modal-title">
+              <FaTrophy className="me-2" />
+              ¡Juego Finalizado!
+            </h5>
+          </div>
+          <div className="modal-body text-center">
+            <FaTrophy className="text-warning mb-3" size={50} />
+            <h4 className="mb-3">{winnerMessage}</h4>
+            <div className="row">
+              <div className="col-6">
+                <div className="score-card score-citizen p-2">
+                  <FaLeaf className="mb-1" />
+                  <h5>{citizensScore}</h5>
+                  <small>Ciudadanos</small>
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="score-card score-enemy p-2">
+                  <FaSkull className="mb-1" />
+                  <h5>{enemiesScore}</h5>
+                  <small>Psicópatas</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-success w-100"
+              onClick={() => {
+                setShowWinnerModal(false);
+                setView("home");
+              }}
+            >
+              Volver al Inicio
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>  
 );
 }
 export default GameInitiate;

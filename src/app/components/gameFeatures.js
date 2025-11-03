@@ -16,6 +16,7 @@ const GameFeatures = ({
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalMessage, setModalMessage] = useState("");
+  const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
 
   const handleCloseModal = () => setShowModal(false);
 
@@ -29,7 +30,7 @@ const GameFeatures = ({
 
     return () => clearInterval(intervalId); // Clean up on component unmount
   }, [selectedGame, view]); // Dependencias
-  
+
   // ✅ Persistir el estado actual del juego
   useEffect(() => {
     if (selectedGame && playerName) {
@@ -89,6 +90,12 @@ const GameFeatures = ({
       if (response.ok) {
         const result = await response.json();
         setSelectedGame(result.data);
+
+        if (result.data.currentRound && result.data.currentRound !== "000000000000000000000000") {
+          setCurrentRoundIndex(result.data.currentRound);
+        } else {
+          setCurrentRoundIndex(0);
+        }
 
         if (result.data.status === "rounds") {
           setView("gameStarted");
@@ -242,7 +249,7 @@ const GameFeatures = ({
                   </div>
                   <div className="info-item">
                     <strong>Current Round:</strong>
-                    <span className="badge bg-info">{selectedGame.currentRound}</span>
+                    <span className="badge bg-info">{currentRoundIndex}</span>
                   </div>
                 </div>
               </div>
@@ -332,7 +339,7 @@ const GameFeatures = ({
                   <div className="stat-item">
                     <FaSyncAlt className="stat-icon" />
                     <div className="stat-content">
-                      <span className="stat-value">{selectedGame.currentRound}</span>
+                      <span className="stat-value">{currentRoundIndex}</span>
                       <span className="stat-label">Round</span>
                     </div>
                   </div>

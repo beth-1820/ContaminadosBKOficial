@@ -1,7 +1,14 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ControlErrors from "./controlErrors";
 import { FaCheck, FaChartBar, FaPlayCircle, FaTrophy, FaLeaf, FaSkull, FaSyncAlt, FaCrown, FaCircle, FaClock, FaUsers, FaUser, FaVoteYea, FaSkullCrossbones, FaUserSecret, FaTimes, FaCheckCircle, FaHandshake, FaPaperPlane } from "react-icons/fa";
+
+
+let Modal;
+if (typeof window !== "undefined") {
+  Modal = require("bootstrap").Modal;
+}
 
 const GameInitiate = ({
   selectedGame,
@@ -37,6 +44,9 @@ const GameInitiate = ({
   const [winnerMessage, setWinnerMessage] = useState("");
   const handleCloseWinnerModal = () => setShowWinnerModal(false);
 
+  const [isGameInitiateLoaded, setIsGameInitiateLoaded] = useState(false);
+  const [savedGameState, setSavedGameState] = useState({});
+
   const groupSizesPerRound = {
     5: [2, 3, 2, 3, 3],
     6: [2, 3, 4, 3, 4],
@@ -45,6 +55,46 @@ const GameInitiate = ({
     9: [3, 4, 4, 5, 5],
     10: [3, 4, 4, 5, 5],
   };
+
+  useEffect(() => {
+    if (typeof document !== "undefined" && isGameInitiateLoaded) {
+      const modalElement = document.getElementById("leaderModal");
+      if (modalElement && Modal) {
+        new Modal(modalElement);
+        console.log("✅ Modal inicializado correctamente (solo en cliente)");
+      }
+    }
+  }, [isGameInitiateLoaded]);
+
+
+  // 🔄 Cargar estado guardado al iniciar
+  useEffect(() => {
+  if (savedGameState.view === "gameStarted" && savedGameState.selectedGame) {
+    console.log("🔄 Restaurando GameInitiate desde activeGameState", savedGameState);
+    
+    setTimeout(() => {
+      setIdRondaActual(savedGameState.idRondaActual || "");
+      setPhaseActual(savedGameState.phaseActual || "");
+      setGroupActual(savedGameState.groupActual || []);
+      setProposedGroup(savedGameState.proposedGroup || []);
+      setCurrentRoundIndex(savedGameState.currentRoundIndex || 0);
+      setIsGameInitiateLoaded(true);
+    }, 150);
+  } else {
+    setIsGameInitiateLoaded(true);
+  }
+}, []);
+
+
+   useEffect(() => {
+  if (typeof document !== "undefined" && isGameInitiateLoaded) {
+    const modalElement = document.getElementById("leaderModal");
+    if (modalElement) {
+      new Modal(modalElement);
+      console.log("✅ Modal inicializado correctamente (solo en cliente)");
+    }
+  }
+}, [isGameInitiateLoaded]);
 
   const determineWinner = () => {
     if (citizensScore > enemiesScore) {
@@ -71,7 +121,6 @@ const GameInitiate = ({
     }
   }, [selectedGame.status, citizensScore, enemiesScore]);
 //Hasta aqui 
-
 
   useEffect(() => {
     if (selectedGame.status === "rounds") {
@@ -499,9 +548,11 @@ useEffect(() => {
   return () => clearInterval(intervalId);
 }, [selectedGame, rounds, playerName, gamePassword]); // Dependencias importantes
 
-  const isLeader = leaderActual === playerName;
-  const isEnemy =
-    selectedGame.enemies && selectedGame.enemies.includes(playerName);
+if (!isGameInitiateLoaded) return null;
+
+const isLeader = leaderActual === playerName;
+const isEnemy =
+  selectedGame.enemies && selectedGame.enemies.includes(playerName);
 
 return (
   <div className="game-list-container contaminaDOS-theme" style={{ margin: '20px' }}>

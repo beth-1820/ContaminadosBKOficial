@@ -1,13 +1,7 @@
-import React, { useState, useRef } from "react";
-import { FaCog, FaLeaf, FaSkull, FaUsers, FaGlobeAmericas, FaRecycle, FaArrowLeft } from "react-icons/fa";
+import React, { useState, useEffect, useRef } from "react";
+import { FaCog, FaUsers, FaArrowLeft } from "react-icons/fa";
 
-
-export const joinGame = async (
-  gameId,
-  playerName,
-  password,
-  backEndAddress
-) => {
+export const joinGame = async (gameId, playerName, password, backEndAddress) => {
   try {
     const gameData = {
       "Content-Type": "application/json",
@@ -20,29 +14,20 @@ export const joinGame = async (
     }
 
     const bodyData = { player: playerName };
-    const joinResponse = await fetch(
-      `${backEndAddress}/api/games/${gameId}`,
-      {
-        method: "PUT",
-        headers: gameData,
-        body: JSON.stringify(bodyData),
-      }
-    );
+    const joinResponse = await fetch(`${backEndAddress}/api/games/${gameId}`, {
+      method: "PUT",
+      headers: gameData,
+      body: JSON.stringify(bodyData),
+    });
 
     if (joinResponse.ok) {
       const result = await joinResponse.json();
       return { success: true, data: result.data };
     } else if (joinResponse.status === 409) {
-      return {
-        success: false,
-        error: "There is already a player with that name in the game",
-      };
+      return { success: false, error: "There is already a player with that name in the game" };
     } else {
       const errorResult = await joinResponse.json();
-      return {
-        success: false,
-        error: errorResult.msg || "Error joining the game",
-      };
+      return { success: false, error: errorResult.msg || "Error joining the game" };
     }
   } catch (error) {
     return { success: false, error: "Request error: " + error };
@@ -60,6 +45,38 @@ const ConexionGame = ({
   const [gamePassword, setGamePassword] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessageLocal] = useState("");
+  const restoredRef = useRef(false); // 🧠 evita restaurar múltiples veces
+
+  // 🟢 Restaurar datos una sola vez cuando selectedGame esté disponible
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!selectedGame || restoredRef.current) return;
+
+    const savedGameState = JSON.parse(sessionStorage.getItem("activeGameState") || "{}");
+    if (savedGameState.view === "joinGame" && savedGameState.selectedGame?.id === selectedGame.id) {
+      console.log("🔄 Restaurando ConexionGame desde activeGameState", savedGameState);
+      setPlayerName(savedGameState.playerName || "");
+      setGamePassword(savedGameState.gamePassword || "");
+    }
+
+    restoredRef.current = true;
+  }, [selectedGame]);
+
+  // 🟢 Guardar automáticamente el estado actual
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!selectedGame) return;
+
+    const gameState = {
+      view: "joinGame",
+      selectedGame,
+      playerName,
+      gamePassword,
+      backendAddress: backEndAddress,
+    };
+
+    sessionStorage.setItem("activeGameState", JSON.stringify(gameState));
+  }, [selectedGame, playerName, gamePassword, backEndAddress]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -78,87 +95,85 @@ const ConexionGame = ({
   }
 
   return (
-  <div className="game-list-container contaminaDOS-theme">
-    <div className="games-container" style={{ margin: '20px' }}>
-      <div className="list-header">
-        <button className="back-btn" onClick={onCancel}>
-          <FaArrowLeft className="me-2" />
-          Back
-        </button>
-        <h2 className="list-title">Join Game</h2>
-        <div></div>
-      </div>
+    <div className="game-list-container contaminaDOS-theme">
+      <div className="games-container" style={{ margin: "20px" }}>
+        <div className="list-header">
+          <button className="back-btn" onClick={onCancel}>
+            <FaArrowLeft className="me-2" />
+            Back
+          </button>
+          <h2 className="list-title">Join Game</h2>
+          <div></div>
+        </div>
 
-      <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-6">
-          {/* Game Information */}
-          <div className="eco-card mb-4">
-            <div className="card-body">
-              <h5 className="card-title">Game Information</h5>
-              <div className="row">
-                <div className="col-6">
-                  <strong>Name:</strong>
-                  <p className="game-name">{selectedGame?.name || selectedGame?.gameName}</p>
-                </div>
-                <div className="col-6">
-                  <strong>Owner:</strong>
-                  <p className="game-owner">{selectedGame?.owner}</p>
+        <div className="row justify-content-center">
+          <div className="col-md-8 col-lg-6">
+            <div className="eco-card mb-4">
+              <div className="card-body">
+                <h5 className="card-title">Game Information</h5>
+                <div className="row">
+                  <div className="col-6">
+                    <strong>Name:</strong>
+                    <p className="game-name">{selectedGame?.name || selectedGame?.gameName}</p>
+                  </div>
+                  <div className="col-6">
+                    <strong>Owner:</strong>
+                    <p className="game-owner">{selectedGame?.owner}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Form */}
-          <div className="eco-card">
-            <div className="card-body">
-              <form onSubmit={handleSubmit}>
-                <div className="search-box mb-3">
-                  <label htmlFor="playerName" className="form-label">
-                    <FaUsers className="me-2" />
-                    Player Name
-                  </label>
-                  <input
-                    type="text"
-                    id="playerName"
-                    ref={playerNameRef}
-                    value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value)}
-                    placeholder="Enter your name"
-                    required
-                  />
-                </div>
+            <div className="eco-card">
+              <div className="card-body">
+                <form onSubmit={handleSubmit}>
+                  <div className="search-box mb-3">
+                    <label htmlFor="playerName" className="form-label">
+                      <FaUsers className="me-2" />
+                      Player Name
+                    </label>
+                    <input
+                      type="text"
+                      id="playerName"
+                      ref={playerNameRef}
+                      value={playerName}
+                      onChange={(e) => setPlayerName(e.target.value)}
+                      placeholder="Enter your name"
+                      required
+                    />
+                  </div>
 
-                <div className="search-box mb-3">
-                  <label htmlFor="password" className="form-label">
-                    <FaCog className="me-2" />
-                    Password (if required)
-                  </label>
-                  <input
-                    type="password"
-                    id="password"
-                    value={gamePassword}
-                    onChange={(e) => setGamePassword(e.target.value)}
-                    placeholder="Enter password"
-                  />
-                </div>
+                  <div className="search-box mb-3">
+                    <label htmlFor="password" className="form-label">
+                      <FaCog className="me-2" />
+                      Password (if required)
+                    </label>
+                    <input
+                      type="password"
+                      id="password"
+                      value={gamePassword}
+                      onChange={(e) => setGamePassword(e.target.value)}
+                      placeholder="Enter password"
+                    />
+                  </div>
 
-                <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                  <button type="button" className="back-btn me-md-2" onClick={onCancel}>
-                    <FaArrowLeft className="me-2" />
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn-select">
-                    Join Game
-                  </button>
-                </div>
-              </form>
+                  <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="button" className="back-btn me-md-2" onClick={onCancel}>
+                      <FaArrowLeft className="me-2" />
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn-select">
+                      Join Game
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-);
-}
+  );
+};
 
 export default ConexionGame;

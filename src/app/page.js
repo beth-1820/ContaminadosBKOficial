@@ -10,26 +10,103 @@ import ControlErrors from "./components/controlErrors";
 import { FaCog, FaLeaf, FaSkull, FaUsers, FaGlobeAmericas, FaRecycle, FaBook } from "react-icons/fa";
 
 export default function Home() {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      require("bootstrap/dist/js/bootstrap.bundle.min.js");
-    }
-  }, []);
-
   const [view, setView] = useState("home");
   const [selectedGame, setSelectedGame] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [gamePassword, setGamePassword] = useState("");
   const [playerName, setPlayerName] = useState("");
+  const [gamePassword, setGamePassword] = useState("");
   const [isOwner, setIsOwner] = useState(false);
   const [backendAddress, setBackendAddress] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showBackendErrorModal, setShowBackendErrorModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const playerNameRef = useRef(null);
-  const [citizensScore, setCitizensScore] = useState(0);
-  const [enemiesScore, setEnemiesScore] = useState(0);
   const [showRules, setShowRules] = useState(false);
+  const [isSessionLoaded, setIsSessionLoaded] = useState(false);
+  const playerNameRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      // Primero intenta cargar el estado activo del juego
+      const activeGameState = JSON.parse(sessionStorage.getItem("activeGameState") || "{}");
+      
+      console.log("🔄 Intentando restaurar desde activeGameState:", activeGameState.view);
+      
+      if (activeGameState.view === "gameFeatures" && activeGameState.selectedGame) {
+        console.log("🔄 Restaurando GameFeatures desde activeGameState", activeGameState);
+        setSelectedGame(activeGameState.selectedGame);
+        setView("gameDetails");
+        setPlayerName(activeGameState.playerName || "");
+        setGamePassword(activeGameState.gamePassword || "");
+        setIsOwner(activeGameState.isOwner || false);
+        setBackendAddress(activeGameState.backendAddress || "");
+        setIsSessionLoaded(true);
+        return;
+      }
+      
+      // ✅ NUEVO: Cargar GameInitiate
+      if (activeGameState.view === "gameStarted" && activeGameState.selectedGame) {
+        console.log("🔄 Restaurando GameInitiate desde activeGameState", activeGameState);
+        setSelectedGame(activeGameState.selectedGame);
+        setView("gameStarted");
+        setPlayerName(activeGameState.playerName || "");
+        setGamePassword(activeGameState.gamePassword || "");
+        setBackendAddress(activeGameState.backendAddress || "");
+        setIsSessionLoaded(true);
+        return;
+      }
+
+      // 🟢 NUEVO: Restaurar ConexionGame
+      if (activeGameState.view === "joinGame" && activeGameState.selectedGame) {
+        console.log("🔄 Restaurando ConexionGame desde activeGameState", activeGameState);
+        setSelectedGame(activeGameState.selectedGame);
+        setView("joinGame");
+        setPlayerName(activeGameState.playerName || "");
+        setGamePassword(activeGameState.gamePassword || "");
+        setBackendAddress(activeGameState.backendAddress || "");
+        setIsSessionLoaded(true);
+        return;
+      }
+
+      // Si no hay estado activo, cargar la sesión normal
+      const savedSession = JSON.parse(sessionStorage.getItem("gameSession") || "{}");
+      
+      if (savedSession.view) {
+        console.log("🔄 Restaurando sesión normal", savedSession);
+        setView(savedSession.view);
+        setSelectedGame(savedSession.selectedGame || null);
+        setPlayerName(savedSession.playerName || "");
+        setGamePassword(savedSession.gamePassword || "");
+        setIsOwner(savedSession.isOwner || false);
+        setBackendAddress(savedSession.backendAddress || "");
+      }
+    } catch (e) {
+      console.warn("Error loading saved session:", e);
+      // Limpiar datos corruptos
+      sessionStorage.removeItem("activeGameState");
+      sessionStorage.removeItem("gameSession");
+    } finally {
+      setIsSessionLoaded(true);
+    }
+  }, []);
+
+  // 🔹 Guardar automáticamente la sesión (sin modificar el tamaño del array)
+  useEffect(() => {
+    if (!isSessionLoaded) return;
+    const sessionData = {
+      view,
+      selectedGame,
+      playerName,
+      gamePassword,
+      isOwner,
+      backendAddress,
+    };
+    sessionStorage.setItem("gameSession", JSON.stringify(sessionData));
+  }, [isSessionLoaded, view, selectedGame, playerName, gamePassword, isOwner, backendAddress]);
+
+  // ✅ Evita renderizar nada hasta que se haya cargado la sesión
+  if (!isSessionLoaded) return null;
 
   const handleGameCreated = (game, password) => {
     if (!validateBackendAddress()) return;
@@ -380,7 +457,7 @@ export default function Home() {
       />
     )}
 
-    {view === "gameDetails" && selectedGame && (
+    {(view === "gameDetails" || view === "gameFeatures") && selectedGame && (
       <GameFeatures
         selectedGame={selectedGame}
         playerName={playerName}

@@ -21,13 +21,42 @@ const GameFeatures = ({
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (selectedGame) {
+      if (selectedGame && view === "gameDetails") { // Solo si estamos en gameDetails
+        console.log("🔄 Auto-refresh ejecutándose...");
         handleRefreshGame();
       }
     }, 5000); // Poll every 5 seconds
 
     return () => clearInterval(intervalId); // Clean up on component unmount
-  }, [selectedGame, view]);
+  }, [selectedGame, view]); // Dependencias
+  
+  // ✅ Persistir el estado actual del juego
+  useEffect(() => {
+    if (selectedGame && playerName) {
+      const dataToSave = {
+        selectedGame,
+        playerName,
+        gamePassword: gamePassword || "",
+        isOwner: !!isOwner,
+        view: "gameFeatures",
+        backendAddress: backEndAddress || "",
+        timestamp: new Date().toISOString() // Para debugging
+      };
+      console.log("💾 Guardando activeGameState", dataToSave);
+      sessionStorage.setItem("activeGameState", JSON.stringify(dataToSave));
+    }
+  }, [selectedGame, playerName, gamePassword, isOwner, backEndAddress]);
+
+  // 🔄 Limpiar cuando se salga de GameFeatures
+  useEffect(() => {
+    return () => {
+      // Solo limpiar si realmente estamos saliendo de GameFeatures
+      if (view !== "gameFeatures") {
+        console.log("🧹 Limpiando activeGameState al salir");
+        sessionStorage.removeItem("activeGameState");
+      }
+    };
+  }, [view]);
 
   const handleRefreshGame = async () => {
     if (!playerName) {
@@ -170,7 +199,13 @@ const GameFeatures = ({
     <div className="games-container">
       {/* Header */}
       <div className="list-header">
-        <button className="back-btn" onClick={() => setView("list")}>
+        <button
+          className="back-btn"
+          onClick={() => {
+            sessionStorage.removeItem("activeGameState");
+            setView("list");
+          }}
+        >
           <FaArrowLeft className="me-2" />
           Back to List
         </button>

@@ -10,6 +10,7 @@ const ExternalGame = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('');
   const limitPerPage = 15;
 
   useEffect(() => {
@@ -47,15 +48,24 @@ const ExternalGame = ({
 
   // Filter games by name whenever search changes
   useEffect(() => {
+    let filtered = games;
+
+    // Filtro por nombre (si hay)
     if (searchQuery.length >= 3) {
-      const filtered = games.filter(game =>
+      filtered = filtered.filter(game =>
         game.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredGames(filtered);
-    } else {
-      setFilteredGames(games); // If no search, show all games
     }
-  }, [searchQuery, games]);
+
+    // Filtro por estado
+    if (statusFilter !== '') {
+      filtered = filtered.filter(game =>
+        game.status?.toLowerCase() === statusFilter.toLowerCase()
+      );
+    }
+
+    setFilteredGames(filtered);
+  }, [searchQuery, statusFilter, games]);
 
   // Get games to show on current page
   const paginatedGames = filteredGames.slice(
@@ -68,22 +78,46 @@ const ExternalGame = ({
   return (
   <div className="game-list-container contaminaDOS-theme" style={{ margin: '20px' }}>
     <div className="games-container" style={{ marginLeft: '20px', marginRight: '20px' }}>
+
+      {/* Header */}
       <div className="list-header" style={{ marginLeft: '20px', marginRight: '20px' }}>
-        <button className="back-button" onClick={onBack}>
-          ← Back
-        </button>
+        <button className="back-button" onClick={onBack}>← Back</button>
         <h2 className="list-title">Game List</h2>
-        <div></div> {/* Spacer for alignment */}
+        <div></div>
       </div>
 
-      <div className="search-box">
+      {/* Search Row */}
+      <div 
+        className="search-box" 
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          marginTop: "20px",
+        }}
+      >
+        {/* Search by name */}
         <input
           type="text"
           className="search-input"
           placeholder="Search game..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ flex: 2 }}
         />
+
+        {/* Status filter */}
+        <select
+          className="search-input"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          style={{ flex: 1 }}
+        >
+          <option value="">All Status</option>
+          <option value="lobby">Lobby</option>
+          <option value="rounds">In Rounds</option>
+          <option value="ended">Ended</option>
+        </select>
       </div>
 
       {loading ? (
@@ -100,6 +134,7 @@ const ExternalGame = ({
             </div>
           ) : (
             <>
+              {/* Table */}
               <div className="games-table">
                 <table className="game-table">
                   <thead>
@@ -128,6 +163,7 @@ const ExternalGame = ({
                 </table>
               </div>
 
+              {/* Pagination */}
               <div className="pagination-container">
                 <div className="pagination-controls">
                   <button
@@ -158,6 +194,7 @@ const ExternalGame = ({
     </div>
   </div>
 );
+
 }
 
 export default ExternalGame;

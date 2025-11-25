@@ -1,22 +1,22 @@
 const express = require('express');
 const next = require('next');
 
-// Define si estás en modo desarrollo
+// Define si esta en modo desarrollo
 const dev = process.env.NODE_ENV !== 'production';
 const appNext = next({ dev });
 const handle = appNext.getRequestHandler();
 
-// Inicializar la aplicación Express
+// Inicializa la aplicación Express
 const app = express();
 
-// Preparar Next.js
+// Prepara Next.js
 appNext.prepare().then(() => {
-  // Redirigir todo el tráfico a Next.js
+  // Redirige todo el tráfico a Next.js
   app.all('*', (req, res) => {
     return handle(req, res);
   });
 
-  // Usar el puerto de la variable de entorno o 3000 por defecto
+  // Usa el puerto de la variable de entorno o 3000 por defecto
   const port = process.env.PORT || 3000;
   
   app.listen(port, (err) => {

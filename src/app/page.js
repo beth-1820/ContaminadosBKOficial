@@ -28,7 +28,6 @@ export default function Home() {
     if (typeof window === "undefined") return;
 
     try {
-      // Primero intenta cargar el estado activo del juego
       const activeGameState = JSON.parse(sessionStorage.getItem("activeGameState") || "{}");
       
       console.log("🔄 Intentando restaurar desde activeGameState:", activeGameState.view);
@@ -45,7 +44,6 @@ export default function Home() {
         return;
       }
       
-      // ✅ NUEVO: Cargar GameInitiate
       if (activeGameState.view === "gameStarted" && activeGameState.selectedGame) {
         console.log("🔄 Restaurando GameInitiate desde activeGameState", activeGameState);
         setSelectedGame(activeGameState.selectedGame);
@@ -57,7 +55,6 @@ export default function Home() {
         return;
       }
 
-      // 🟢 NUEVO: Restaurar ConexionGame
       if (activeGameState.view === "joinGame" && activeGameState.selectedGame) {
         console.log("🔄 Restaurando ConexionGame desde activeGameState", activeGameState);
         setSelectedGame(activeGameState.selectedGame);
@@ -69,7 +66,6 @@ export default function Home() {
         return;
       }
 
-      // Si no hay estado activo, cargar la sesión normal
       const savedSession = JSON.parse(sessionStorage.getItem("gameSession") || "{}");
       
       if (savedSession.view) {
@@ -83,7 +79,6 @@ export default function Home() {
       }
     } catch (e) {
       console.warn("Error loading saved session:", e);
-      // Limpiar datos corruptos
       sessionStorage.removeItem("activeGameState");
       sessionStorage.removeItem("gameSession");
     } finally {
@@ -91,7 +86,6 @@ export default function Home() {
     }
   }, []);
 
-  // 🔹 Guardar automáticamente la sesión (sin modificar el tamaño del array)
   useEffect(() => {
     if (!isSessionLoaded) return;
     const sessionData = {
@@ -105,7 +99,6 @@ export default function Home() {
     sessionStorage.setItem("gameSession", JSON.stringify(sessionData));
   }, [isSessionLoaded, view, selectedGame, playerName, gamePassword, isOwner, backendAddress]);
 
-  // ✅ Evita renderizar nada hasta que se haya cargado la sesión
   if (!isSessionLoaded) return null;
 
   const handleGameCreated = (game, password) => {

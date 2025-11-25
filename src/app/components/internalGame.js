@@ -100,7 +100,6 @@ const InternalGame = ({
         owner: cleanGame.owner,
       };
 
-      // ✅ Solo incluir "password" si realmente hay texto después de trim
       if (cleanGame.password && cleanGame.password !== "") {
         gameData.password = cleanGame.password;
       }
@@ -143,7 +142,6 @@ const InternalGame = ({
     createGame(gameDetails);
   };
 
-  // También mejora el onChange del password para evitar espacios innecesarios
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     // Permite espacios pero no al inicio

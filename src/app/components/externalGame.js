@@ -14,7 +14,6 @@ const ExternalGame = ({
   const limitPerPage = 15;
 
   useEffect(() => {
-    // Function to get all games, going through all pages
     const fetchAllGames = async () => {
       setLoading(true);
       let allGames = [];
@@ -23,21 +22,20 @@ const ExternalGame = ({
 
       do {
         try {
-          // Make request to backend for each page with `fetch`
           const response = await fetch(
             `${backEndAddress}/api/games?page=${page}&limit=50`
           );
           const result = await response.json();
 
-          fetchedData = result.data; // We assume the response follows the structure { data: Game[] }
+          fetchedData = result.data; 
           allGames = [...allGames, ...fetchedData];
-          page += 1; // Move to next page
+          page += 1; 
         } catch (error) {
           console.error('Error loading games', error);
           setLoading(false);
           return;
         }
-      } while (fetchedData.length > 0); // Stop if there are no more results
+      } while (fetchedData.length > 0); 
 
       setGames(allGames);
       setLoading(false);
@@ -46,18 +44,16 @@ const ExternalGame = ({
     fetchAllGames();
   }, [backEndAddress]);
 
-  // Filter games by name whenever search changes
+
   useEffect(() => {
     let filtered = games;
 
-    // Filtro por nombre (si hay)
     if (searchQuery.length >= 3) {
       filtered = filtered.filter(game =>
         game.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Filtro por estado
     if (statusFilter !== '') {
       filtered = filtered.filter(game =>
         game.status?.toLowerCase() === statusFilter.toLowerCase()
@@ -67,7 +63,6 @@ const ExternalGame = ({
     setFilteredGames(filtered);
   }, [searchQuery, statusFilter, games]);
 
-  // Get games to show on current page
   const paginatedGames = filteredGames.slice(
     (currentPage - 1) * limitPerPage,
     currentPage * limitPerPage

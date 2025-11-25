@@ -61,16 +61,15 @@ const GameInitiate = ({
       const modalElement = document.getElementById("leaderModal");
       if (modalElement && Modal) {
         new Modal(modalElement);
-        console.log("✅ Modal inicializado correctamente (solo en cliente)");
+        console.log("Modal inicializado correctamente (solo en cliente)");
       }
     }
   }, [isGameInitiateLoaded]);
 
 
-  // 🔄 Cargar estado guardado al iniciar
   useEffect(() => {
   if (savedGameState.view === "gameStarted" && savedGameState.selectedGame) {
-    console.log("🔄 Restaurando GameInitiate desde activeGameState", savedGameState);
+    console.log("Restaurando GameInitiate desde activeGameState", savedGameState);
     
     setTimeout(() => {
       setIdRondaActual(savedGameState.idRondaActual || "");
@@ -91,7 +90,7 @@ const GameInitiate = ({
     const modalElement = document.getElementById("leaderModal");
     if (modalElement) {
       new Modal(modalElement);
-      console.log("✅ Modal inicializado correctamente (solo en cliente)");
+      console.log("Modal inicializado correctamente (solo en cliente)");
     }
   }
 }, [isGameInitiateLoaded]);
@@ -104,9 +103,8 @@ const GameInitiate = ({
     }
   };
 
-  //Agregue aqui esto para que sirva el ganar
   useEffect(() => {
-    console.log("🔍 Verificando estado del juego:", {
+    console.log("Verificando estado del juego:", {
       status: selectedGame.status,
       citizensScore,
       enemiesScore,
@@ -119,8 +117,7 @@ const GameInitiate = ({
       setWinnerMessage(winnerMessage);
       setShowWinnerModal(true);
     }
-  }, [selectedGame.status, citizensScore, enemiesScore]);
-//Hasta aqui 
+  }, [selectedGame.status, citizensScore, enemiesScore]); 
 
   useEffect(() => {
     if (selectedGame.status === "rounds") {
@@ -530,7 +527,7 @@ const GameInitiate = ({
       if (response.ok) {
         const data = await response.json();
         console.log("🗳️ Votos actualizados:", data.data.votes);
-        setVotesActual(data.data.votes); // ← Solo actualiza los votos
+        setVotesActual(data.data.votes); 
       }
     }
   } catch (err) {
@@ -543,10 +540,10 @@ useEffect(() => {
       console.log("🔄 Actualizando votos automáticamente...");
       updateVotesOnly();
     }
-  }, 3000); // Cada 3 segundos
+  }, 3000); 
 
   return () => clearInterval(intervalId);
-}, [selectedGame, rounds, playerName, gamePassword]); // Dependencias importantes
+}, [selectedGame, rounds, playerName, gamePassword]); 
 
 if (!isGameInitiateLoaded) return null;
 
@@ -684,8 +681,8 @@ return (
                         {/* VOTE COUNT ADDED */}
                         <div className="mt-2 text-center">
                           <small className="text-muted">
-                            <strong>✅ In favor:</strong> {votesActual.filter(vote => vote === true).length} | 
-                            <strong> ❌ Against:</strong> {votesActual.filter(vote => vote === false).length}
+                            <strong>In favor:</strong> {votesActual.filter(vote => vote === true).length} | 
+                            <strong> Against:</strong> {votesActual.filter(vote => vote === false).length}
                           </small>
                         </div>
                         

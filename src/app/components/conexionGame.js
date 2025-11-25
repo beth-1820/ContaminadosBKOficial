@@ -45,9 +45,8 @@ const ConexionGame = ({
   const [gamePassword, setGamePassword] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessageLocal] = useState("");
-  const restoredRef = useRef(false); // 🧠 evita restaurar múltiples veces
+  const restoredRef = useRef(false); 
 
-  // 🟢 Restaurar datos una sola vez cuando selectedGame esté disponible
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!selectedGame || restoredRef.current) return;
@@ -62,7 +61,7 @@ const ConexionGame = ({
     restoredRef.current = true;
   }, [selectedGame]);
 
-  // 🟢 Guardar automáticamente el estado actual
+  
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!selectedGame) return;

@@ -22,16 +22,15 @@ const GameFeatures = ({
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (selectedGame && view === "gameDetails") { // Solo si estamos en gameDetails
+      if (selectedGame && view === "gameDetails") { 
         console.log("🔄 Auto-refresh ejecutándose...");
         handleRefreshGame();
       }
-    }, 5000); // Poll every 5 seconds
+    }, 5000); 
+    return () => clearInterval(intervalId); 
+  }, [selectedGame, view]); 
 
-    return () => clearInterval(intervalId); // Clean up on component unmount
-  }, [selectedGame, view]); // Dependencias
-
-  // ✅ Persistir el estado actual del juego
+  // Persiste el estado actual del juego
   useEffect(() => {
     if (selectedGame && playerName) {
       const dataToSave = {
@@ -48,10 +47,10 @@ const GameFeatures = ({
     }
   }, [selectedGame, playerName, gamePassword, isOwner, backEndAddress]);
 
-  // 🔄 Limpiar cuando se salga de GameFeatures
+  // Limpia cuando se salga de GameFeatures
   useEffect(() => {
     return () => {
-      // Solo limpiar si realmente estamos saliendo de GameFeatures
+      // Solo limpia si realmente estamos saliendo de GameFeatures
       if (view !== "gameFeatures") {
         console.log("🧹 Limpiando activeGameState al salir");
         sessionStorage.removeItem("activeGameState");
@@ -69,7 +68,6 @@ const GameFeatures = ({
       return;
     }
 
-    // Configure headers conditionally
     const headers = {
       accept: "application/json",
       player: playerName,
@@ -164,7 +162,6 @@ const GameFeatures = ({
       return;
     }
 
-    // Configure headers conditionally
     const headers = {
       accept: "application/json",
       player: playerName,
